@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Phone, Mail, Crown, Save } from "lucide-react";
+import { Phone, Mail, Save } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Spinner from "@/components/ui/Spinner";
 import Toast from "@/components/ui/Toast";
@@ -13,7 +13,6 @@ export default function ProfilePage() {
 
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [plan, setPlan] = useState<"free" | "pro">("free");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -25,13 +24,12 @@ export default function ProfilePage() {
 
       const { data } = await supabase
         .from("users")
-        .select("email, plan, whatsapp_number")
+        .select("email, whatsapp_number")
         .eq("id", session.user.id)
         .single();
 
       if (data) {
         setEmail(data.email ?? "");
-        setPlan(data.plan ?? "free");
         setWhatsapp(data.whatsapp_number ?? "");
       }
       setLoading(false);
@@ -73,33 +71,6 @@ export default function ProfilePage() {
         <p className="mt-1 text-sm text-gray-500">Manage your account and notification settings.</p>
       </div>
 
-      {/* Plan card */}
-      <div className={`rounded-xl p-5 flex items-center justify-between ${
-        plan === "pro"
-          ? "bg-gradient-to-r from-brand-600 to-blue-600 text-white"
-          : "bg-amber-50 border border-amber-200"
-      }`}>
-        <div>
-          <p className={`font-semibold ${plan === "pro" ? "text-white" : "text-amber-900"}`}>
-            {plan === "pro" ? "✨ Pro Plan" : "Free Plan"}
-          </p>
-          <p className={`text-sm mt-0.5 ${plan === "pro" ? "text-blue-100" : "text-amber-700"}`}>
-            {plan === "pro"
-              ? "Unlimited AI generations & WhatsApp notifications"
-              : "3 AI generations/day • Upgrade for unlimited"}
-          </p>
-        </div>
-        {plan === "free" && (
-          <a
-            href="/api/stripe/create-checkout"
-            className="flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-2 text-xs font-semibold text-white hover:bg-amber-700 transition-colors"
-          >
-            <Crown className="h-3.5 w-3.5" />
-            Upgrade
-          </a>
-        )}
-      </div>
-
       {/* Profile form */}
       <form onSubmit={handleSave} className="card space-y-4">
         <div>
@@ -130,7 +101,6 @@ export default function ProfilePage() {
           </div>
           <p className="mt-1 text-xs text-gray-400">
             Include country code. We'll send job alerts and resume notifications via WhatsApp.
-            {plan === "free" && " ⚠️ WhatsApp notifications require Pro plan."}
           </p>
         </div>
 

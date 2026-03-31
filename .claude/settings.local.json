@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:vercel.com)",
+      "Bash(npm run:*)",
+      "Bash(npx next:*)",
+      "Bash(grep -n \"page\\\\.tsx\" /c/Users/91620/ai job helper/ai-job-assistant/app/\\\\\\(dashboard\\\\\\)/jobs/[id]/page.tsx)"
+    ]
+  }
+}

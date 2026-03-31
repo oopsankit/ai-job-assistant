@@ -8,9 +8,8 @@ export default async function JobDetailPage({ params }: { params: { id: string }
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) redirect("/login");
 
-  const [{ data: job }, { data: profile }] = await Promise.all([
+  const [{ data: job }] = await Promise.all([
     supabase.from("jobs").select("*").eq("id", params.id).single(),
-    supabase.from("users").select("plan, whatsapp_number").eq("id", session.user.id).single(),
   ]);
 
   if (!job) notFound();
@@ -74,8 +73,6 @@ export default async function JobDetailPage({ params }: { params: { id: string }
       <JobDetailClient
         job={job}
         userId={session.user.id}
-        userPlan={profile?.plan ?? "free"}
-        whatsappNumber={profile?.whatsapp_number ?? null}
       />
     </div>
   );

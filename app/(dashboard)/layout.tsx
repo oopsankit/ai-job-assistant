@@ -17,20 +17,12 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Fetch user profile for plan badge
-  const { data: profile } = await supabase
-    .from("users")
-    .select("plan, email")
-    .eq("id", session.user.id)
-    .single();
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       <div className="flex flex-1 flex-col pl-64">
         <TopBar
-          userEmail={profile?.email ?? session.user.email ?? ""}
-          plan={profile?.plan ?? "free"}
+          userEmail={session.user.email ?? ""}
         />
         <main className="flex-1 p-6">{children}</main>
       </div>

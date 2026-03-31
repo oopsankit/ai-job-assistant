@@ -76,15 +76,14 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    // WhatsApp notifications for Pro users (fire-and-forget)
+    // WhatsApp notifications for all users with a number set (fire-and-forget)
     const { notifyNewJob } = await import("@/lib/twilio");
     adminSupabase
       .from("users")
       .select("whatsapp_number")
-      .eq("plan", "pro")
       .not("whatsapp_number", "is", null)
-      .then(({ data: proUsers }) => {
-        proUsers?.forEach((u) => {
+      .then(({ data: users }) => {
+        users?.forEach((u) => {
           if (u.whatsapp_number) {
             notifyNewJob(u.whatsapp_number, title, company);
           }

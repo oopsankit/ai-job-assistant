@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Wand2, MessageSquare, Bookmark, Crown } from "lucide-react";
+import { Copy, Check, Wand2, MessageSquare, Bookmark } from "lucide-react";
 import Spinner from "@/components/ui/Spinner";
 import Toast from "@/components/ui/Toast";
 import { Job } from "@/types";
@@ -9,13 +9,11 @@ import { Job } from "@/types";
 interface Props {
   job: Job;
   userId: string;
-  userPlan: "free" | "pro";
-  whatsappNumber: string | null;
 }
 
 type TabType = "resume" | "linkedin" | "email";
 
-export default function JobDetailClient({ job, userId, userPlan, whatsappNumber }: Props) {
+export default function JobDetailClient({ job, userId }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>("resume");
   const [userResume, setUserResume] = useState("");
   const [userBackground, setUserBackground] = useState("");
@@ -24,8 +22,6 @@ export default function JobDetailClient({ job, userId, userPlan, whatsappNumber 
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-
-  const isLimitedFree = userPlan === "free";
 
   async function handleGenerate() {
     if (activeTab === "resume" && !userResume.trim()) {
@@ -70,14 +66,7 @@ export default function JobDetailClient({ job, userId, userPlan, whatsappNumber 
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 429) {
-          setToast({
-            message: "Daily limit reached (3/day on Free plan). Upgrade to Pro for unlimited generations.",
-            type: "error",
-          });
-        } else {
-          setToast({ message: data.error ?? "Generation failed. Please try again.", type: "error" });
-        }
+        setToast({ message: data.error ?? "Generation failed. Please try again.", type: "error" });
         return;
       }
 
@@ -134,15 +123,6 @@ export default function JobDetailClient({ job, userId, userPlan, whatsappNumber 
     <div className="card space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="font-semibold text-gray-900">✨ AI Generation Tools</h2>
-        {isLimitedFree && (
-          <a
-            href="/api/stripe/create-checkout"
-            className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors border border-amber-200"
-          >
-            <Crown className="h-3.5 w-3.5" />
-            3/day limit – Upgrade for unlimited
-          </a>
-        )}
       </div>
 
       {/* Tabs */}

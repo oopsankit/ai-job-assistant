@@ -28,7 +28,7 @@ export default async function DashboardPage() {
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(5),
-    supabase.from("users").select("plan, email").eq("id", userId).single(),
+    supabase.from("users").select("email").eq("id", userId).single(),
   ]);
 
   const appliedCount = applications?.filter((a) => a.status !== "saved").length ?? 0;
@@ -67,24 +67,6 @@ export default async function DashboardPage() {
           </div>
         ))}
       </div>
-
-      {/* Free plan upgrade banner */}
-      {profile?.plan === "free" && (
-        <div className="rounded-xl bg-gradient-to-r from-brand-600 to-blue-600 p-5 text-white flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <p className="font-semibold">Upgrade to Pro</p>
-            <p className="text-sm text-blue-100 mt-0.5">
-              Unlimited AI generations, WhatsApp notifications & more.
-            </p>
-          </div>
-          <Link
-            href="/api/stripe/create-checkout"
-            className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-brand-600 hover:bg-blue-50 transition-colors"
-          >
-            Upgrade Now <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      )}
 
       {/* Quick actions */}
       <div className="grid gap-4 sm:grid-cols-2">
