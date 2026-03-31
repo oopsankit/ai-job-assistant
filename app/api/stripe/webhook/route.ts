@@ -54,16 +54,12 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        // Look up user by Stripe customer email (simplest approach)
-        // In production, store stripe_customer_id on the user row
-        const { data: customers } = await (await import("@/lib/stripe")).default.customers.retrieve(customerId)
-          .then(async (c) => {
-            const customer = c as Stripe.Customer;
-            return adminSupabase
-              .from("users")
-              .update({ plan: "free" })
-              .eq("email", customer.email!);
-          });
+        const stripeInstance = (await import("@/lib/stripe")).default;
+        const customer = await stripeInstance.customers.retrieve(customerId) as Stripe.Customer;
+        await adminSupabase
+          .from("users")
+          .update({ plan: "free" })
+          .eq("email", customer.email!);
 
         console.log("[stripe/webhook] Subscription cancelled, user downgraded to Free");
         break;
